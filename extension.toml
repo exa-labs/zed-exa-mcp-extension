@@ -1,0 +1,10 @@
+id = "mcp-server-exa-search"
+name = "Exa Search MCP Server"
+description = "Model Context Protocol Server for Exa Search supporting both web search and retrieval of web page contents"
+version = "0.0.1"
+schema_version = 1
+authors = ["Felix Zeller <felix@exa.ai>"]
+repository = "https://github.com/exa-labs/zed-exa-mcp"
+
+[context_servers.mcp-server-exa-search]
+name = "Exa MCP Server"
