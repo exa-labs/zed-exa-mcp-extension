@@ -4,7 +4,7 @@ Zed extension that wraps the `exa-mcp-server` package from [exa-labs/exa-mcp-ser
 
 ## Features
 
-The Exa MCP server provides these tools:
+The Exa MCP server provides these tools for Zed:
 
 - **web_search**: Performs real-time web searches with optimized results and content extraction
 - **crawling**: Extracts content from specific URLs, useful for reading articles, PDFs, or any web page
