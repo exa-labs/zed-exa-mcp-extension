@@ -32,3 +32,11 @@ In your Zed settings:
     }
 }
 ```
+
+### Agent Mode Configuration
+
+If you're using Zed's agent mode, you need to enable this context server for your assistant:
+
+1. Open Zed's assistant settings
+2. Enable the exa MCP tool. If you see that the status of the tool is a red dot, make sure you added your exa api key in settings
+3. Enable the exa MCP tool in the active assistant profile. In the chat section, click on the 'Write|Ask' button, then click on 'tools', then enable the exa MCP tool.

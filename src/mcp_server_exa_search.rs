@@ -38,11 +38,14 @@ impl zed::Extension for ExaSearchModelContextExtension {
 
         Ok(Command {
             command: zed::node_binary_path()?,
-            args: vec![env::current_dir()
-                .unwrap()
-                .join(SERVER_PATH)
-                .to_string_lossy()
-                .to_string()],
+            args: vec![
+                env::current_dir()
+                    .unwrap()
+                    .join(SERVER_PATH)
+                    .to_string_lossy()
+                    .to_string(),
+                "--tools=web_search,crawling".to_string(),
+            ],
             env: vec![("EXA_API_KEY".into(), settings.exa_api_key)],
         })
     }
