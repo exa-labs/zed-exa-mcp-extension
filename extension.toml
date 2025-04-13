@@ -1,6 +1,6 @@
 id = "mcp-server-exa-search"
-name = "Exa Search MCP Server"
-description = "Model Context Protocol Server for Exa Search and web content retrieval"
+name = "Exa Search + Crawling MCP Server"
+description = "Model Context Protocol Server for Exa Search and Crawling"
 version = "0.0.1"
 schema_version = 1
 authors = ["Felix Zeller <felix@exa.ai>"]
