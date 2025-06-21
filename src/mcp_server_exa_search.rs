@@ -47,7 +47,7 @@ impl zed::Extension for ExaSearchModelContextExtension {
                     .join(SERVER_PATH)
                     .to_string_lossy()
                     .to_string(),
-                "--tools=web_search_exa,crawling".to_string(),
+                "--tools=web_search_exa,crawling,github_search".to_string(),
             ],
             env: vec![("EXA_API_KEY".into(), settings.exa_api_key)],
         })
