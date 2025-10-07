@@ -1,4 +1,4 @@
 {
-  /// Your Exa API key
-  "exa_api_key": "YOUR_EXA_API_KEY"
+  /// Your Exa API key (optional - works without API key via Smithery)
+  "exa_api_key": ""
 }
