@@ -7,8 +7,7 @@ use zed_extension_api::{
 };
 
 const PACKAGE_NAME: &str = "exa-mcp-server";
-const PACKAGE_VERSION: &str = "latest"; // Using latest version as recommended
-const SERVER_PATH: &str = "node_modules/exa-mcp-server/build/index.js";
+const SERVER_PATH: &str = "node_modules/exa-mcp-server/.smithery/stdio/index.cjs";
 
 struct ExaSearchModelContextExtension;
 
@@ -27,9 +26,10 @@ impl zed::Extension for ExaSearchModelContextExtension {
         _context_server_id: &ContextServerId,
         project: &Project,
     ) -> Result<Command> {
+        let latest_version = zed::npm_package_latest_version(PACKAGE_NAME)?;
         let version = zed::npm_package_installed_version(PACKAGE_NAME)?;
-        if version.as_deref() != Some(PACKAGE_VERSION) {
-            zed::npm_install_package(PACKAGE_NAME, PACKAGE_VERSION)?;
+        if version.as_deref() != Some(latest_version.as_ref()) {
+            zed::npm_install_package(PACKAGE_NAME, &latest_version)?;
         }
 
         let settings = ContextServerSettings::for_project("mcp-server-exa-search", project)?;
