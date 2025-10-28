@@ -29,7 +29,7 @@ The extension works out of the box without any configuration. Simply install it 
 
 ### Optional: API Key Configuration
 
-For enhanced rate limits or premium features, you can optionally provide an Exa API key:
+You can optionally provide an Exa API key:
 
 1. Sign up for an [Exa API account](https://dashboard.exa.ai)
 2. Generate your API key from [dashboard.exa.ai/api-keys](https://dashboard.exa.ai/api-keys)

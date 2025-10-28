@@ -1,4 +1,4 @@
 {
-  /// Optional: Your Exa API key for enhanced rate limits
+  /// Optional: Your Exa API key
   "exa_api_key": null
 }
