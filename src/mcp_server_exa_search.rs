@@ -28,9 +28,10 @@ impl zed::Extension for ExaSearchModelContextExtension {
         _context_server_id: &ContextServerId,
         project: &Project,
     ) -> Result<Command> {
+        let latest_version = zed::npm_package_latest_version(MCP_REMOTE_PACKAGE)?;
         let version = zed::npm_package_installed_version(MCP_REMOTE_PACKAGE)?;
-        if version.is_none() {
-            zed::npm_install_package(MCP_REMOTE_PACKAGE, MCP_REMOTE_VERSION)?;
+        if version.as_deref() != Some(latest_version.as_ref()) {
+            zed::npm_install_package(MCP_REMOTE_PACKAGE, &latest_version)?;
         }
 
         let settings = ContextServerSettings::for_project("mcp-server-exa-search", project)?;
