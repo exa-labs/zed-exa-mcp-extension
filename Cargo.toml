@@ -10,6 +10,6 @@ path = "src/mcp_server_exa_search.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-serde = "1.0"
-schemars = "0.8"
+serde = "1.0.228"
+schemars = "1.0.4"
 zed_extension_api = "0.7.0"
