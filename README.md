@@ -20,7 +20,6 @@ This extension uses Exa's hosted HTTP MCP server at `https://mcp.exa.ai/mcp` via
 - Requires no local installation of the exa-mcp-server package
 - Connects directly to Exa's hosted infrastructure
 - Works without an API key for basic functionality
-- Supports both production (`mcp.exa.ai`) and staging (`mcp.exa.sh`) environments
 
 ## Configuration
 
@@ -48,27 +47,6 @@ In your Zed settings:
 }
 ```
 
-### Advanced: Custom MCP Server URL
-
-To use a different MCP server URL (e.g., staging environment):
-
-```json
-{
-    "context_servers": {
-        "mcp-server-exa-search": {
-          "settings": {
-              "mcp_url": "https://mcp.exa.sh/mcp"
-          }
-        }
-    }
-}
-```
-
-Alternatively, set the `EXA_MCP_URL` environment variable:
-```bash
-export EXA_MCP_URL=https://mcp.exa.sh/mcp
-```
-
 ### Agent Mode Configuration
 
 If you're using Zed's agent mode, you need to enable this context server for your assistant:
@@ -89,8 +67,6 @@ cargo test --test mcp_integration_test -- --ignored
 cargo test --test mcp_integration_test test_mcp_server_connectivity -- --ignored
 cargo test --test mcp_integration_test test_mcp_server_search_functionality -- --ignored
 
-# Test staging environment
-cargo test --test mcp_integration_test test_staging_environment -- --ignored
 ```
 
 ## Requirements
@@ -107,7 +83,6 @@ If you experience connection issues:
 1. Verify you have Node.js installed: `node --version`
 2. Test the mcp-remote tool directly: `npx -y mcp-remote https://mcp.exa.ai/mcp`
 3. Check your internet connection
-4. Try the staging environment: Set `mcp_url` to `https://mcp.exa.sh/mcp`
 
 ### Tool Not Appearing
 

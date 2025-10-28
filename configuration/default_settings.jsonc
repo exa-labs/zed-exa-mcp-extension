@@ -1,6 +1,4 @@
 {
   /// Optional: Your Exa API key for enhanced rate limits
-  "exa_api_key": "YOUR_EXA_API_KEY",
-  /// Optional: Custom MCP server URL (default: https://mcp.exa.ai/mcp)
-  "mcp_url": "https://mcp.exa.ai/mcp"
+  "exa_api_key": null
 }

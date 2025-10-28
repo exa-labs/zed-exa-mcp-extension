@@ -1,5 +1,5 @@
 use serde_json::{json, Value};
-use std::io::{BufRead, BufReader, Write};
+use std::io::{BufRead, BufReader, Read, Write};
 use std::process::{Child, Command, Stdio};
 use std::time::Duration;
 
@@ -230,10 +230,10 @@ fn test_mcp_server_search_functionality() {
 
 #[test]
 #[ignore] // Run with: cargo test --test mcp_integration_test -- --ignored
-fn test_staging_environment() {
-    let mcp_url = "https://mcp.exa.sh/mcp";
+fn test_production_environment() {
+    let mcp_url = "https://mcp.exa.ai/mcp";
     
-    println!("Testing staging MCP server connectivity to: {}", mcp_url);
+    println!("Testing production MCP server connectivity to: {}", mcp_url);
 
     let mut client = McpClient::new(mcp_url).expect("Failed to start MCP client");
 
@@ -244,13 +244,13 @@ fn test_staging_environment() {
             "protocolVersion": "2024-11-05",
             "capabilities": {},
             "clientInfo": {
-                "name": "zed-exa-test-staging",
+                "name": "zed-exa-test",
                 "version": "0.1.0"
             }
         }))
-        .expect("Failed to send initialize request to staging");
+        .expect("Failed to send initialize request");
 
-    println!("Staging initialize response: {}", serde_json::to_string_pretty(&response).unwrap());
+    println!("Production initialize response: {}", serde_json::to_string_pretty(&response).unwrap());
 
-    assert!(response.get("result").is_some(), "Staging initialize should return a result");
+    assert!(response.get("result").is_some(), "Production initialize should return a result");
 }

@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "exa-mcp-server": "^3.0.7"
+  }
+}

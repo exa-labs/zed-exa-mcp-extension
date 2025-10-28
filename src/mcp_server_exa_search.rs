@@ -16,8 +16,6 @@ struct ExaSearchModelContextExtension;
 struct ExaSearchContextServerSettings {
     #[serde(default)]
     exa_api_key: Option<String>,
-    #[serde(default)]
-    mcp_url: Option<String>,
 }
 
 impl zed::Extension for ExaSearchModelContextExtension {
@@ -41,13 +39,10 @@ impl zed::Extension for ExaSearchModelContextExtension {
         } else {
             ExaSearchContextServerSettings {
                 exa_api_key: None,
-                mcp_url: None,
             }
         };
 
-        let mcp_url = settings.mcp_url
-            .or_else(|| env::var("EXA_MCP_URL").ok())
-            .unwrap_or_else(|| DEFAULT_MCP_URL.to_string());
+        let mcp_url = DEFAULT_MCP_URL.to_string();
 
         let mut env_vars = Vec::new();
         if let Some(api_key) = settings.exa_api_key {
