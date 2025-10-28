@@ -7,7 +7,6 @@ use zed_extension_api::{
 };
 
 const DEFAULT_MCP_URL: &str = "https://mcp.exa.ai/mcp";
-const STAGING_MCP_URL: &str = "https://mcp.exa.sh/mcp";
 
 struct ExaSearchModelContextExtension;
 
