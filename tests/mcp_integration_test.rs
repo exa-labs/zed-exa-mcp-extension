@@ -82,7 +82,6 @@ impl Drop for McpClient {
 }
 
 #[test]
-#[ignore] // Run with: cargo test --test mcp_integration_test -- --ignored
 fn test_mcp_server_connectivity() {
     let mcp_url = std::env::var("EXA_MCP_URL").unwrap_or_else(|_| "https://mcp.exa.ai/mcp".to_string());
     
@@ -113,7 +112,6 @@ fn test_mcp_server_connectivity() {
 }
 
 #[test]
-#[ignore] // Run with: cargo test --test mcp_integration_test -- --ignored
 fn test_mcp_server_list_tools() {
     let mcp_url = std::env::var("EXA_MCP_URL").unwrap_or_else(|_| "https://mcp.exa.ai/mcp".to_string());
     
@@ -162,7 +160,6 @@ fn test_mcp_server_list_tools() {
 }
 
 #[test]
-#[ignore] // Run with: cargo test --test mcp_integration_test -- --ignored
 fn test_mcp_server_search_functionality() {
     let mcp_url = std::env::var("EXA_MCP_URL").unwrap_or_else(|_| "https://mcp.exa.ai/mcp".to_string());
     
@@ -229,7 +226,6 @@ fn test_mcp_server_search_functionality() {
 }
 
 #[test]
-#[ignore] // Run with: cargo test --test mcp_integration_test -- --ignored
 fn test_production_environment() {
     let mcp_url = "https://mcp.exa.ai/mcp";
     

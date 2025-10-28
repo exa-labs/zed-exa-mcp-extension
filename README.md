@@ -61,12 +61,11 @@ The extension includes integration tests to verify connectivity and functionalit
 
 ```bash
 # Run all integration tests (requires npx and internet connection)
-cargo test --test mcp_integration_test -- --ignored
+cargo test --test mcp_integration_test
 
 # Test specific functionality
-cargo test --test mcp_integration_test test_mcp_server_connectivity -- --ignored
-cargo test --test mcp_integration_test test_mcp_server_search_functionality -- --ignored
-
+cargo test --test mcp_integration_test test_mcp_server_connectivity
+cargo test --test mcp_integration_test test_mcp_server_search_functionality
 ```
 
 ## Requirements
