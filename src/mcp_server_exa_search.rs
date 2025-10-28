@@ -6,15 +6,17 @@ use zed_extension_api::{
     self as zed, serde_json, Command, ContextServerConfiguration, ContextServerId, Project, Result,
 };
 
-const PACKAGE_NAME: &str = "exa-mcp-server";
-const PACKAGE_VERSION: &str = "latest"; // Using latest version as recommended
-const SERVER_PATH: &str = "node_modules/exa-mcp-server/build/index.js";
+const DEFAULT_MCP_URL: &str = "https://mcp.exa.ai/mcp";
+const STAGING_MCP_URL: &str = "https://mcp.exa.sh/mcp";
 
 struct ExaSearchModelContextExtension;
 
 #[derive(Debug, Deserialize, JsonSchema)]
 struct ExaSearchContextServerSettings {
-    exa_api_key: String,
+    #[serde(default)]
+    exa_api_key: Option<String>,
+    #[serde(default)]
+    mcp_url: Option<String>,
 }
 
 impl zed::Extension for ExaSearchModelContextExtension {
@@ -27,29 +29,33 @@ impl zed::Extension for ExaSearchModelContextExtension {
         _context_server_id: &ContextServerId,
         project: &Project,
     ) -> Result<Command> {
-        let version = zed::npm_package_installed_version(PACKAGE_NAME)?;
-        if version.as_deref() != Some(PACKAGE_VERSION) {
-            zed::npm_install_package(PACKAGE_NAME, PACKAGE_VERSION)?;
+        let settings = ContextServerSettings::for_project("mcp-server-exa-search", project)?;
+        let settings: ExaSearchContextServerSettings = if let Some(settings_value) = settings.settings {
+            serde_json::from_value(settings_value).map_err(|e| e.to_string())?
+        } else {
+            ExaSearchContextServerSettings {
+                exa_api_key: None,
+                mcp_url: None,
+            }
+        };
+
+        let mcp_url = settings.mcp_url
+            .or_else(|| env::var("EXA_MCP_URL").ok())
+            .unwrap_or_else(|| DEFAULT_MCP_URL.to_string());
+
+        let mut env_vars = Vec::new();
+        if let Some(api_key) = settings.exa_api_key {
+            env_vars.push(("EXA_API_KEY".into(), api_key));
         }
 
-        let settings = ContextServerSettings::for_project("mcp-server-exa-search", project)?;
-        let Some(settings) = settings.settings else {
-            return Err("missing `exa_api_key` setting".into());
-        };
-        let settings: ExaSearchContextServerSettings =
-            serde_json::from_value(settings).map_err(|e| e.to_string())?;
-
         Ok(Command {
-            command: zed::node_binary_path()?,
+            command: "npx".to_string(),
             args: vec![
-                env::current_dir()
-                    .unwrap()
-                    .join(SERVER_PATH)
-                    .to_string_lossy()
-                    .to_string(),
-                "--tools=web_search_exa,crawling".to_string(),
+                "-y".to_string(),
+                "mcp-remote".to_string(),
+                mcp_url,
             ],
-            env: vec![("EXA_API_KEY".into(), settings.exa_api_key)],
+            env: env_vars,
         })
     }
 

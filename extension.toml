@@ -1,7 +1,7 @@
 id = "mcp-server-exa-search"
 name = "Exa Search + Crawling MCP Server"
-description = "Model Context Protocol Server for Exa Search and Crawling"
-version = "0.0.4"
+description = "Model Context Protocol Server for Exa Search and Crawling (HTTP)"
+version = "0.1.0"
 schema_version = 1
 authors = ["Felix Zeller <felix@exa.ai>"]
 repository = "https://github.com/exa-labs/zed-exa-mcp-extension"
