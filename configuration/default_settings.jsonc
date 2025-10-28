@@ -1,4 +1,4 @@
 {
-  /// Your Exa API key
+  /// Your Exa API key (optional - works without API key via Smithery with rate limits)
   "exa_api_key": "YOUR_EXA_API_KEY"
 }

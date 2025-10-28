@@ -1,20 +1,20 @@
 use schemars::JsonSchema;
 use serde::Deserialize;
-use std::env;
 use zed::settings::ContextServerSettings;
 use zed_extension_api::{
     self as zed, serde_json, Command, ContextServerConfiguration, ContextServerId, Project, Result,
 };
 
-const PACKAGE_NAME: &str = "exa-mcp-server";
-const PACKAGE_VERSION: &str = "latest"; // Using latest version as recommended
-const SERVER_PATH: &str = "node_modules/exa-mcp-server/build/index.js";
+const MCP_REMOTE_PACKAGE: &str = "mcp-remote";
+const MCP_REMOTE_VERSION: &str = "latest";
+const MCP_SERVER_URL: &str = "https://mcp.exa.ai/mcp";
 
 struct ExaSearchModelContextExtension;
 
 #[derive(Debug, Deserialize, JsonSchema)]
 struct ExaSearchContextServerSettings {
-    exa_api_key: String,
+    #[serde(default)]
+    exa_api_key: Option<String>,
 }
 
 impl zed::Extension for ExaSearchModelContextExtension {
@@ -27,29 +27,34 @@ impl zed::Extension for ExaSearchModelContextExtension {
         _context_server_id: &ContextServerId,
         project: &Project,
     ) -> Result<Command> {
-        let version = zed::npm_package_installed_version(PACKAGE_NAME)?;
-        if version.as_deref() != Some(PACKAGE_VERSION) {
-            zed::npm_install_package(PACKAGE_NAME, PACKAGE_VERSION)?;
+        let version = zed::npm_package_installed_version(MCP_REMOTE_PACKAGE)?;
+        if version.as_deref() != Some(MCP_REMOTE_VERSION) {
+            zed::npm_install_package(MCP_REMOTE_PACKAGE, MCP_REMOTE_VERSION)?;
         }
 
         let settings = ContextServerSettings::for_project("mcp-server-exa-search", project)?;
-        let Some(settings) = settings.settings else {
-            return Err("missing `exa_api_key` setting".into());
+        
+        let settings: ExaSearchContextServerSettings = match settings.settings {
+            Some(settings_value) => {
+                serde_json::from_value(settings_value).map_err(|e| e.to_string())?
+            }
+            None => ExaSearchContextServerSettings {
+                exa_api_key: None,
+            },
         };
-        let settings: ExaSearchContextServerSettings =
-            serde_json::from_value(settings).map_err(|e| e.to_string())?;
+
+        let mut env = Vec::new();
+        if let Some(api_key) = settings.exa_api_key {
+            env.push(("EXA_API_KEY".into(), api_key));
+        }
 
         Ok(Command {
             command: zed::node_binary_path()?,
             args: vec![
-                env::current_dir()
-                    .unwrap()
-                    .join(SERVER_PATH)
-                    .to_string_lossy()
-                    .to_string(),
-                "--tools=web_search_exa,crawling".to_string(),
+                "-e".to_string(),
+                format!("require('{}')('{}')", MCP_REMOTE_PACKAGE, MCP_SERVER_URL),
             ],
-            env: vec![("EXA_API_KEY".into(), settings.exa_api_key)],
+            env,
         })
     }
 

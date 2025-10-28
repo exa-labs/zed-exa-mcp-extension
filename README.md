@@ -1,17 +1,20 @@
 # mcp-server-exa-search
 
-Zed extension that wraps the `exa-mcp-server` package from [exa-labs/exa-mcp-server](https://github.com/exa-labs/exa-mcp-server). This extension supports both web search functionality and retrieval of web page contents.
+Zed extension that connects to Exa's hosted MCP server at [https://mcp.exa.ai/mcp](https://mcp.exa.ai/mcp) via HTTP transport using [mcp-remote](https://github.com/modelcontextprotocol/mcp-remote). This extension supports web search functionality and retrieval of web page contents.
 
 ## Features
 
 The Exa MCP server provides these tools for Zed:
 
-- **web_search**: Performs real-time web searches with optimized results and content extraction
+- **web_search_exa**: Performs real-time web searches with optimized results and content extraction
 - **crawling**: Extracts content from specific URLs, useful for reading articles, PDFs, or any web page
+- **get_code_context_exa**: Retrieves code context from repositories
 
 ## Configuration
 
-This MCP server requires an API key.
+The API key is **optional** - the server works without an API key via Smithery (with rate limits).
+
+For full access without rate limits:
 
 1. Sign up for an [Exa API account](https://dashboard.exa.ai)
 2. Generate your API key from [dashboard.exa.ai/api-keys](https://dashboard.exa.ai/api-keys)
@@ -28,6 +31,8 @@ In your Zed settings:
     }
 }
 ```
+
+If you don't provide an API key, the extension will still work with rate-limited access via Smithery.
 
 ### Agent Mode Configuration
 
