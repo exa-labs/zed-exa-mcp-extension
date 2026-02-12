@@ -6,9 +6,9 @@ use zed_extension_api::{
     self as zed, serde_json, Command, ContextServerConfiguration, ContextServerId, Project, Result,
 };
 
-const MCP_REMOTE_PACKAGE: &str = "mcp-remote";
-const MCP_REMOTE_VERSION: &str = "latest";
-const DEFAULT_MCP_URL: &str = "https://mcp.exa.ai/mcp";
+const PACKAGE_NAME: &str = "exa-mcp-server";
+const PACKAGE_VERSION: &str = "latest";
+const SERVER_PATH: &str = "node_modules/exa-mcp-server/.smithery/stdio/index.cjs";
 
 struct ExaSearchModelContextExtension;
 
@@ -28,9 +28,9 @@ impl zed::Extension for ExaSearchModelContextExtension {
         _context_server_id: &ContextServerId,
         project: &Project,
     ) -> Result<Command> {
-        let version = zed::npm_package_installed_version(MCP_REMOTE_PACKAGE)?;
-        if version.is_none() {
-            zed::npm_install_package(MCP_REMOTE_PACKAGE, MCP_REMOTE_VERSION)?;
+        let version = zed::npm_package_installed_version(PACKAGE_NAME)?;
+        if version.as_deref() != Some(PACKAGE_VERSION) {
+            zed::npm_install_package(PACKAGE_NAME, PACKAGE_VERSION)?;
         }
 
         let settings = ContextServerSettings::for_project("mcp-server-exa-search", project)?;
@@ -42,24 +42,20 @@ impl zed::Extension for ExaSearchModelContextExtension {
             }
         };
 
-        let mcp_url = DEFAULT_MCP_URL.to_string();
-
         let mut env_vars = Vec::new();
         if let Some(api_key) = settings.exa_api_key {
             env_vars.push(("EXA_API_KEY".into(), api_key));
         }
 
-        let command = if cfg!(target_os = "windows") {
-            "node_modules/.bin/mcp-remote.cmd".to_string()
-        } else {
-            let path = "node_modules/.bin/mcp-remote";
-            zed::make_file_executable(path)?;
-            path.to_string()
-        };
+        let server_path = env::current_dir()
+            .unwrap()
+            .join(SERVER_PATH)
+            .to_string_lossy()
+            .to_string();
 
         Ok(Command {
-            command,
-            args: vec![mcp_url],
+            command: zed::node_binary_path()?,
+            args: vec![server_path],
             env: env_vars,
         })
     }
