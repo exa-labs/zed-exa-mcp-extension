@@ -8,6 +8,7 @@ use zed_extension_api::{
 
 const MCP_REMOTE_PACKAGE: &str = "mcp-remote";
 const MCP_REMOTE_VERSION: &str = "latest";
+const MCP_REMOTE_SERVER_PATH: &str = "node_modules/mcp-remote/dist/proxy.js";
 const DEFAULT_MCP_URL: &str = "https://mcp.exa.ai/mcp";
 
 struct ExaSearchModelContextExtension;
@@ -29,7 +30,7 @@ impl zed::Extension for ExaSearchModelContextExtension {
         project: &Project,
     ) -> Result<Command> {
         let version = zed::npm_package_installed_version(MCP_REMOTE_PACKAGE)?;
-        if version.is_none() {
+        if version.as_deref() != Some(MCP_REMOTE_VERSION) {
             zed::npm_install_package(MCP_REMOTE_PACKAGE, MCP_REMOTE_VERSION)?;
         }
 
@@ -42,24 +43,20 @@ impl zed::Extension for ExaSearchModelContextExtension {
             }
         };
 
-        let mcp_url = DEFAULT_MCP_URL.to_string();
-
         let mut env_vars = Vec::new();
         if let Some(api_key) = settings.exa_api_key {
             env_vars.push(("EXA_API_KEY".into(), api_key));
         }
 
-        let command = if cfg!(target_os = "windows") {
-            "node_modules/.bin/mcp-remote.cmd".to_string()
-        } else {
-            let path = "node_modules/.bin/mcp-remote";
-            zed::make_file_executable(path)?;
-            path.to_string()
-        };
+        let server_path = env::current_dir()
+            .unwrap()
+            .join(MCP_REMOTE_SERVER_PATH)
+            .to_string_lossy()
+            .to_string();
 
         Ok(Command {
-            command,
-            args: vec![mcp_url],
+            command: zed::node_binary_path()?,
+            args: vec![server_path, DEFAULT_MCP_URL.to_string()],
             env: env_vars,
         })
     }
