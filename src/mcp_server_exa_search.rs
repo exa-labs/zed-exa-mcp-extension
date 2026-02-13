@@ -6,9 +6,10 @@ use zed_extension_api::{
     self as zed, serde_json, Command, ContextServerConfiguration, ContextServerId, Project, Result,
 };
 
-const PACKAGE_NAME: &str = "exa-mcp-server";
-const PACKAGE_VERSION: &str = "latest";
-const SERVER_PATH: &str = "node_modules/exa-mcp-server/.smithery/stdio/index.cjs";
+const MCP_REMOTE_PACKAGE: &str = "mcp-remote";
+const MCP_REMOTE_VERSION: &str = "latest";
+const MCP_REMOTE_SERVER_PATH: &str = "node_modules/mcp-remote/dist/proxy.js";
+const DEFAULT_MCP_URL: &str = "https://mcp.exa.ai/mcp";
 
 struct ExaSearchModelContextExtension;
 
@@ -28,9 +29,9 @@ impl zed::Extension for ExaSearchModelContextExtension {
         _context_server_id: &ContextServerId,
         project: &Project,
     ) -> Result<Command> {
-        let version = zed::npm_package_installed_version(PACKAGE_NAME)?;
-        if version.as_deref() != Some(PACKAGE_VERSION) {
-            zed::npm_install_package(PACKAGE_NAME, PACKAGE_VERSION)?;
+        let version = zed::npm_package_installed_version(MCP_REMOTE_PACKAGE)?;
+        if version.as_deref() != Some(MCP_REMOTE_VERSION) {
+            zed::npm_install_package(MCP_REMOTE_PACKAGE, MCP_REMOTE_VERSION)?;
         }
 
         let settings = ContextServerSettings::for_project("mcp-server-exa-search", project)?;
@@ -49,13 +50,13 @@ impl zed::Extension for ExaSearchModelContextExtension {
 
         let server_path = env::current_dir()
             .unwrap()
-            .join(SERVER_PATH)
+            .join(MCP_REMOTE_SERVER_PATH)
             .to_string_lossy()
             .to_string();
 
         Ok(Command {
             command: zed::node_binary_path()?,
-            args: vec![server_path],
+            args: vec![server_path, DEFAULT_MCP_URL.to_string()],
             env: env_vars,
         })
     }
