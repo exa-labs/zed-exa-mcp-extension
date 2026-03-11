@@ -1,4 +1,10 @@
 {
-  /// Optional: Your Exa API key
-  "exa_api_key": null
+  /// Optional: Your Exa API key from https://dashboard.exa.ai/api-keys
+  "exa_api_key": null,
+  /// Optional: Comma-separated list of tools to enable.
+  /// Default (when null): web_search_exa, get_code_context_exa
+  /// Available tools: web_search_exa, web_search_advanced_exa, get_code_context_exa,
+  ///   crawling_exa, company_research_exa, people_search_exa,
+  ///   deep_researcher_start, deep_researcher_check, deep_search_exa
+  "tools": null
 }

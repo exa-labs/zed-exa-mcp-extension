@@ -1,6 +1,6 @@
 use schemars::JsonSchema;
 use serde::Deserialize;
-use std::env;
+
 use zed::settings::ContextServerSettings;
 use zed_extension_api::{
     self as zed, serde_json, Command, ContextServerConfiguration, ContextServerId, Project, Result,
@@ -14,8 +14,15 @@ struct ExaSearchModelContextExtension;
 
 #[derive(Debug, Deserialize, JsonSchema)]
 struct ExaSearchContextServerSettings {
+    /// Optional Exa API key. Get one at https://dashboard.exa.ai/api-keys
     #[serde(default)]
     exa_api_key: Option<String>,
+    /// Comma-separated list of tools to enable.
+    /// Available: web_search_exa, web_search_advanced_exa, get_code_context_exa,
+    /// crawling_exa, company_research_exa, people_search_exa,
+    /// deep_researcher_start, deep_researcher_check, deep_search_exa
+    #[serde(default)]
+    tools: Option<String>,
 }
 
 impl zed::Extension for ExaSearchModelContextExtension {
@@ -39,15 +46,24 @@ impl zed::Extension for ExaSearchModelContextExtension {
         } else {
             ExaSearchContextServerSettings {
                 exa_api_key: None,
+                tools: None,
             }
         };
 
-        let mcp_url = DEFAULT_MCP_URL.to_string();
+        let mut mcp_url = DEFAULT_MCP_URL.to_string();
+        let mut query_params: Vec<String> = Vec::new();
 
-        let mut env_vars = Vec::new();
-        if let Some(api_key) = settings.exa_api_key {
-            env_vars.push(("EXA_API_KEY".into(), api_key));
+        if let Some(ref api_key) = settings.exa_api_key {
+            query_params.push(format!("exaApiKey={}", api_key));
         }
+        if let Some(ref tools) = settings.tools {
+            query_params.push(format!("tools={}", tools));
+        }
+        if !query_params.is_empty() {
+            mcp_url = format!("{}?{}", mcp_url, query_params.join("&"));
+        }
+
+        let env_vars = Vec::new();
 
         let command = if cfg!(target_os = "windows") {
             "node_modules/.bin/mcp-remote.cmd".to_string()
