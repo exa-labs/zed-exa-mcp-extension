@@ -1,10 +1,11 @@
 {
   /// Optional: Your Exa API key from https://dashboard.exa.ai/api-keys
+  /// (higher rate limits; required for agent_run)
   "exa_api_key": null,
-  /// Optional: Comma-separated list of tools to enable.
-  /// Default (when null): web_search_exa, get_code_context_exa
-  /// Available tools: web_search_exa, web_search_advanced_exa, get_code_context_exa,
-  ///   crawling_exa, company_research_exa, people_search_exa,
-  ///   deep_researcher_start, deep_researcher_check, deep_search_exa
+  /// Optional: Comma-separated list of tools to enable — replaces the defaults,
+  /// so list every tool you want.
+  /// Default (when null): web_search_exa, web_fetch_exa
+  /// Available tools: web_search_exa, web_fetch_exa, web_search_advanced_exa,
+  ///   agent_run (requires an API key)
   "tools": null
 }

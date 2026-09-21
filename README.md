@@ -1,57 +1,66 @@
-# mcp-server-exa-search
+# Exa MCP Server for Zed
 
-Zed extension that connects to Exa's hosted MCP server via HTTP. This extension provides access to Exa's web search, code search, deep research, and more through the Model Context Protocol.
+A Zed extension that connects Zed's Agent Panel to Exa's hosted MCP server (`https://mcp.exa.ai/mcp`) via `mcp-remote`, giving your agent web search, page fetching, and Exa Agent tools.
 
-## Features
+## Install
+
+Open Zed's Extensions view (`zed: extensions`), search for **Exa**, and click Install.
+
+## Tools
 
 **Enabled by default:**
-- **web_search_exa**: Real-time web searches with optimized results and content extraction
-- **get_code_context_exa**: Search and get relevant code snippets, examples, and documentation
 
-**Available via `tools` setting:**
-- **web_search_advanced_exa**: Advanced web search with full control over filters, domains, dates, and content options
-- **crawling_exa**: Get the full content of a specific webpage from a known URL
-- **company_research_exa**: Research any company to get business information, news, and insights
-- **people_search_exa**: Find people and their professional profiles
-- **deep_researcher_start**: Start an AI research agent that searches, reads, and writes a detailed report
-- **deep_researcher_check**: Check status and get results from a deep research task
-- **deep_search_exa**: Deep search with query expansion and synthesized answers (requires API key)
+| Tool | Description |
+| --- | --- |
+| `web_search_exa` | Search the web for any topic and get clean, ready-to-use content |
+| `web_fetch_exa` | Read a webpage's full content as clean markdown from one or more URLs |
+
+**Available via the `tools` setting:**
+
+| Tool | Description |
+| --- | --- |
+| `web_search_advanced_exa` | Advanced search with filters, domains, dates, highlights, summaries, and subpage crawling |
+| `agent_run` | Run an [Exa Agent](https://docs.exa.ai/reference/agent-api-guide) for multi-step research, list-building, enrichment, and structured output (requires an API key) |
+
+Note: setting `tools` replaces the defaults entirely — list every tool you want enabled.
 
 ## Configuration
 
-### Basic Usage (No API Key Required)
-
-The extension works out of the box without any configuration. Simply install it and start using Exa's MCP tools in Zed's agent mode.
-
-### Enabling Additional Tools
-
-To enable tools beyond the defaults (e.g. deep research), add the `tools` setting with a comma-separated list:
+Add an `exa_api_key` and/or `tools` under the server's `settings` in `settings.json`:
 
 ```json
 {
     "context_servers": {
         "mcp-server-exa-search": {
-          "settings": {
-              "exa_api_key": "YOUR_API_KEY",
-              "tools": "web_search_exa,get_code_context_exa,deep_researcher_start,deep_researcher_check"
-          }
+            "settings": {
+                "exa_api_key": "YOUR_API_KEY",
+                "tools": "web_search_exa,web_fetch_exa,agent_run"
+            }
         }
     }
 }
 ```
 
-### API Key Configuration
+## Authentication
 
-An API key is optional for basic search, but required for deep research tools and to avoid rate limits.
+The hosted server works anonymously with rate limits — no key required for `web_search_exa` and `web_fetch_exa`. An API key from [dashboard.exa.ai/api-keys](https://dashboard.exa.ai/api-keys) raises your rate limits and unlocks `agent_run` (Exa Agent). The key is passed to the server as `?exaApiKey=`.
 
-1. Sign up for an [Exa API account](https://dashboard.exa.ai)
-2. Generate your API key from [dashboard.exa.ai/api-keys](https://dashboard.exa.ai/api-keys)
+## Without the extension
 
-### Agent Mode Configuration
+Zed natively supports remote MCP servers (with OAuth), so you can skip the extension entirely and add this to `settings.json`:
 
-If you're using Zed's agent mode, you need to enable this context server for your assistant:
+```json
+{
+    "context_servers": {
+        "exa": {
+            "url": "https://mcp.exa.ai/mcp"
+        }
+    }
+}
+```
 
-1. Open Zed's assistant settings
-2. Enable the Exa MCP tool in the tools panel
-3. Enable the Exa MCP tool in the active assistant profile. In the chat section, click on the 'Write|Ask' button, then click on 'tools', then enable the Exa MCP tool
+## Using it in the Agent Panel
 
+Open the Agent Panel settings and check the indicator dot next to the Exa server — green means it's running. Tools can be toggled per agent profile. See the [Zed MCP docs](https://zed.dev/docs/ai/mcp) for details.
+
+Full tool docs: [docs.exa.ai/reference/exa-mcp](https://docs.exa.ai/reference/exa-mcp)
