@@ -12,15 +12,15 @@ const DEFAULT_MCP_URL: &str = "https://mcp.exa.ai/mcp";
 
 struct ExaSearchModelContextExtension;
 
-#[derive(Debug, Deserialize, JsonSchema)]
+#[derive(Debug, Default, Deserialize, JsonSchema)]
 struct ExaSearchContextServerSettings {
     /// Optional Exa API key. Get one at https://dashboard.exa.ai/api-keys
+    /// (higher rate limits; required for agent_run)
     #[serde(default)]
     exa_api_key: Option<String>,
-    /// Comma-separated list of tools to enable.
-    /// Available: web_search_exa, web_search_advanced_exa, get_code_context_exa,
-    /// crawling_exa, company_research_exa, people_search_exa,
-    /// deep_researcher_start, deep_researcher_check, deep_search_exa
+    /// Comma-separated list of tools to enable. Replaces the defaults.
+    /// Default: web_search_exa, web_fetch_exa
+    /// Available: web_search_exa, web_fetch_exa, web_search_advanced_exa, agent_run
     #[serde(default)]
     tools: Option<String>,
 }
@@ -41,14 +41,11 @@ impl zed::Extension for ExaSearchModelContextExtension {
         }
 
         let settings = ContextServerSettings::for_project("mcp-server-exa-search", project)?;
-        let settings: ExaSearchContextServerSettings = if let Some(settings_value) = settings.settings {
-            serde_json::from_value(settings_value).map_err(|e| e.to_string())?
-        } else {
-            ExaSearchContextServerSettings {
-                exa_api_key: None,
-                tools: None,
-            }
-        };
+        let settings: ExaSearchContextServerSettings = settings
+            .settings
+            .map(|v| serde_json::from_value(v).map_err(|e| e.to_string()))
+            .transpose()?
+            .unwrap_or_default();
 
         let mut mcp_url = DEFAULT_MCP_URL.to_string();
         let mut query_params: Vec<String> = Vec::new();
@@ -63,8 +60,6 @@ impl zed::Extension for ExaSearchModelContextExtension {
             mcp_url = format!("{}?{}", mcp_url, query_params.join("&"));
         }
 
-        let env_vars = Vec::new();
-
         let command = if cfg!(target_os = "windows") {
             "node_modules/.bin/mcp-remote.cmd".to_string()
         } else {
@@ -76,7 +71,7 @@ impl zed::Extension for ExaSearchModelContextExtension {
         Ok(Command {
             command,
             args: vec![mcp_url],
-            env: env_vars,
+            env: Vec::new(),
         })
     }
 
